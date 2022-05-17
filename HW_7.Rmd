@@ -1,0 +1,58 @@
+---
+title: "HW 7"
+author: "Jacob Haussler"
+date: "12/10/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# R Markdown
+### Consider binary.csv. This is the superset of gre_data.csv that you used in your practice assignment. This data set has the same binary response variable admit (0/1). But it has 3 regressors - gpa, gre and rank. Rank is a categorical variable indicating the rank of the undergraduate institution attended. Fit a logistic regression model on this data.
+
+```{r}
+binary <- read.csv("./binary.csv")
+dat <- binary
+```
+
+
+1. Fit a logistic regression model on this data. 
+```{r}
+logistic.model <- glm(admit ~ gpa+gre+as.factor(rank), family=binomial(link='logit'),data=dat)
+summary(logistic.model)
+```
+
+2. Interpret the regression coefficients.
+- The fitted equation is:
+
+              log( ˆπ/1−ˆπ) = −3.449548 + 0.777014gpa + 0.002294gre - 0.560031rank
+
+3. How does the odds of getting admission changes between students attending rank 2 institution vs. rank 3 institution?
+```{r}
+rank <- 2
+rank2 <- 3
+pi_hat <- 1/(1 + exp(-(-3.449548 - 0.560031*rank)))
+pi_hat
+pi_hat2 <- 1/(1 + exp(-(-3.449548 - 0.560031*rank2)))
+pi_hat2
+
+
+```
+
+- Here we can see that the odds of getting in are better when the rank of the institution is 2 compared to 3.  
+
+4. Estimate the admit status of a student who graduated from a rank 3 institution with gre = 760 and gpa = 3.2.
+
+```{r}
+rank3 <- 3
+gre <- 760
+gpa <- 3.2
+pi_hat3 <- 1/(1 + exp(-(-3.449548 + 0.777014*gpa + 0.002294*gre - 0.560031*rank3)))
+pi_hat3
+y_hat <- ifelse(pi_hat3 > 0.5, 1, 0)
+y_hat
+```
+
+- The student would not be admitted since pi_hat must be above 0.5. 
